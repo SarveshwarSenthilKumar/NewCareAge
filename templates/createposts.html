@@ -1,0 +1,58 @@
+<DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.8">
+      <meta http-equiv="X-UA-Compatible" content="ie-edge">
+      <link href="style.css" rel="stylesheet" type="text/css" />
+      
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+      <title>CareAge</title>
+    </head>
+    <body style="background-color: #18191a;">
+        <div style="width: 100%; height: 55%;"><b style="width: 40%; height: 100%; margin-right: 9%; float:right; font-size: 2.5vw; color: white;">
+            <div style="color: white; font-size: 4vw; text-align: center; margin-bottom: 4%; margin-top: 7%;">Welcome to <br><b style="color: #316cb8;">CareAge</b> </div></b></div>
+
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+            
+            <form  action="/createposts" method="POST">  
+                <div class="form-group">
+  
+                <br>
+                {% if error %}
+                <error style="color: #FF474C; font-size: 2.5vw; margin-left: 4%; margin-right: 3%; font-weight: 650;">Error: {{error}}</error>
+                {% endif %}
+                <br>
+                <input required placeholder="Job/Role Title" type="text" name="role" id="role" class="form-control" style="height: 10%;  color: black; font-size: 2.5vw;  margin-left: 3%; margin-right: 3%; width: 94%;">
+                <textarea name="roleDescription" id="roleDescription" type="text" name="roleDescription"  style="height: 10%; font-size: 3vw; margin-left: 3%; margin-right: 3%; width: 94%; border-style: solid; border-width: 4px; border-color: #000000;" placeholder="Type in the description for this role: Please do not add any personal information"></textarea>
+
+                
+                <div style="width: 100%; height: 10%; display: block; overflow: hidden;">
+                    <select multiple required id="rewardType" name="rewardType" class="form-control" style="height: 100%; font-size: 2vw; margin-left: 3%; width: 47%; margin-bottom:2%; float:left;">
+                        <option disabled focused>Choose a Reward</option>
+                        <option value="points">Points</option>
+                        <option value="volunteerHours">Volunteer Hours</option>
+                
+                    </select>
+                    <input required placeholder="Quantity of Reward" type="number"  name="reward" id="reward" class="form-control" style="height:100%;  color: black; font-size: 2.5vw; width: 47%; float: right; margin-right: 3%;">
+                </div>
+                <input required placeholder="{{ address }}" type="text" name="address" id="address" class="form-control" style="height: 10%;  color: black; font-size: 2.5vw;  margin-left: 3%; margin-right: 3%; width: 94%;">
+  
+                <div class="form-group">
+                
+                  <br>
+                  <button type="submit" class="btn btn-primary form-control" style="height: 10%; width: 94%; margin-left: 3%; margin-right: 3%;">Create Post</button>
+  
+                </div>
+              </form>
+
+              <form  action="/login" method="GET" style="margin-top: 4%;">  
+                <div class="form-group">
+  
+                  <button type="submit" class="btn btn-danger form-control" style="height:10%; margin-left: 3%; margin-right: 3%; width: 94%;">Return to Log In</button>
+  
+                </div>
+              </form>
+           
+    </body>
+    </html>
