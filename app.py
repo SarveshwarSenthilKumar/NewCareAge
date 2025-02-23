@@ -101,7 +101,7 @@ def index():
 
 @app.route("/index")
 def index2():
-    return render_template("index.html")
+    return redirect("/")
 
 @app.route("/about")
 def about():
@@ -274,6 +274,7 @@ def applyforpost():
         return render_template("loggedindex.html", posts=posts, sentences=["Unfortunately this task has been completed and this person has been aided by someone else!"])
     
     else:
+        points=user["pointCount"]
         db = SQL("sqlite:///posts.db")
         db.execute("UPDATE posts SET completer = :name WHERE id = :id", name=name, id=id)
         
@@ -282,6 +283,10 @@ def applyforpost():
         roleDescription=post["roleDescription"]
         quantity=post["quantity"]
         volunteerHoursorPoints=post["volunteerHoursOrPoints"]
+        if volunteerHoursorPoints == "CareAge Points":
+            points+=quantity
+            db=SQL("sqlite:///users.db")
+            db.exeecute("UPDATE users SET pointCount = :pointCount WHERE id = :id", pointCount=points, id=user["id"])
         address=post["address"]
         
         db=SQL("sqlite:///users.db")
@@ -290,7 +295,7 @@ def applyforpost():
         phoneNumber=creatingUser[0]["phoneNumber"]
         emailAddress=creatingUser[0]["emailAddress"]
 
-        return render_template("fulldetails.html", roleTitle=roleTitle, creator=creator, roleDescription=roleDescription, quantity=quantity, volunteerHoursOrPoints=volunteerHoursorPoints. address=address, phoneNumber=phoneNumber, emailAddress=emailAddress)
+        return render_template("fulldetails.html", roleTitle=roleTitle, creator=creator, roleDescription=roleDescription, quantity=quantity, volunteerHoursOrPoints=volunteerHoursorPoints, address=address, phoneNumber=phoneNumber, emailAddress=emailAddress, completer=session.get("username"))
 
 @app.route("/searchforpost")
 def searchforpost():
@@ -304,19 +309,56 @@ def searchforpost():
 
 @app.route("/redeempoints")
 def redeempoints():
-    return "Carriage"
+    return render_template("rewards.html")
 
 @app.route("/viewhelper")
 def viewhelper():
-    return "Carriage"
+    if not session.get("name"):
+        return redirect("/")
+    
+    db = SQL("sqlite:///users.db")
+    user=db.execute("SELECT * FROm users WHERE username = :username", username=session.get("username"))
 
-@app.route("/changeinformation")
-def changeinformation():
-    return "Carriage"
+    fullName=user[0]["name"]
+    db = SQL("sqlite:///posts.db")
+    posts=db.execute("SELECT * FROM posts WHERE creator = :name", name=fullName)
+    posts.reverse()
+    
 
-@app.route("/verifyuser")
-def verifyuser():
-    return "Carriage"
+    if len(posts) == 0:
+        db = SQL("sqlite:///users.db")
+        role=db.execute("SELECT * FROM users WHERE username = :username", username=user)[0]
+        fullName=role["name"]
+        role=role["role"]
+
+        if role == "caregiver":
+            db = SQL("sqlite:///posts.db")
+            posts=db.execute("SELECT * FROM posts WHERE completer IS NULL")
+
+        elif role == "elder":
+            db = SQL("sqlite:///posts.db")
+            posts=db.execute("SELECT * FROM posts WHERE creator = :name", name=fullName)
+            posts.reverse()
+
+        return render_template("loggedindex.html", posts=posts, sentences=["You have no posts to check help on!"])
+    else:
+        post=posts[-1]
+        roleTitle=post["roleTitle"]
+        creator=post["creator"]
+        completer=post["completer"]
+        roleDescription=post["roleDescription"]
+        quantity=post["quantity"]
+        volunteerHoursorPoints=post["volunteerHoursOrPoints"]
+       
+        address=post["address"]
+        
+        db=SQL("sqlite:///users.db")
+        creatingUser=db.execute("SELECT * FROM users WHERE name = :fullName", fullName=completer)
+
+        phoneNumber=creatingUser[0]["phoneNumber"]
+        emailAddress=creatingUser[0]["emailAddress"]
+
+        return render_template("fulldetails.html", roleTitle=roleTitle, creator=creator, roleDescription=roleDescription, quantity=quantity, volunteerHoursOrPoints=volunteerHoursorPoints, address=address, phoneNumber=phoneNumber, emailAddress=emailAddress, completer=completer)
 
 @app.route("/logout")
 def logout():
