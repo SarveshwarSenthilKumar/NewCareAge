@@ -271,11 +271,26 @@ def applyforpost():
             posts=db.execute("SELECT * FROM posts WHERE creator = :name", name=name)
             posts.reverse()
 
-        return render_template("loggedindex.html", posts=posts, sentences=["You have successfully created a post on CareAge!"])
+        return render_template("loggedindex.html", posts=posts, sentences=["Unfortunately this task has been completed and this person has been aided by someone else!"])
     
-    return render_template("")
+    else:
+        db = SQL("sqlite:///posts.db")
+        db.execute("UPDATE posts SET completer = :name WHERE id = :id", name=name, id=id)
         
-    return "Carriage"
+        roleTitle=post["roleTitle"]
+        creator=post["creator"]
+        roleDescription=post["roleDescription"]
+        quantity=post["quantity"]
+        volunteerHoursorPoints=post["volunteerHoursOrPoints"]
+        address=post["address"]
+        
+        db=SQL("sqlite:///users.db")
+        creatingUser=db.execute("SELECT * FROM users WHERE name = :fullName", fullName=creator)
+
+        phoneNumber=creatingUser[0]["phoneNumber"]
+        emailAddress=creatingUser[0]["emailAddress"]
+
+        return render_template("fulldetails.html", roleTitle=roleTitle, creator=creator, roleDescription=roleDescription, quantity=quantity, volunteerHoursOrPoints=volunteerHoursorPoints. address=address, phoneNumber=phoneNumber, emailAddress=emailAddress)
 
 @app.route("/searchforpost")
 def searchforpost():
